@@ -10,9 +10,9 @@
     },
     "shoten": {
       "matchCondition": {
-        "route": "/api/{*path}"
+        "route": "/shorten{*all}"
       },
-      "backendUri": "https://%WEBSITE_HOSTNAME%/api/{path}"
+      "backendUri": "https://%WEBSITE_HOSTNAME%/api/shorten{all}"
     }
   }
 }
