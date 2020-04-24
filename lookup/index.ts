@@ -48,7 +48,12 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-  context.log("HTTP trigger function processed a request.");
+  context.log(
+    context.invocationId,
+    "HTTP trigger function processed a lookup request.",
+    req.query,
+    req.headers
+  );
 
   // grab the slug from either the
   // query `?slug=...` or a header `x-slug`
@@ -131,7 +136,7 @@ const httpTrigger: AzureFunction = async function (
 
       context.res = {
         status: 500,
-        body: `500: OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! _trace ${context.invocationId}`,
+        body: `500: OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! [_trace:${context.invocationId}]`,
       };
 
       return;

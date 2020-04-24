@@ -4,10 +4,12 @@
   "description": "",
   "scripts": {
     "build": "tsc",
+    "build:production": "npm install && npm run build && npm prune --production",
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "func start",
-    "test": "echo \"No tests yet...\""
+    "test": "echo \"No tests yet...\"",
+    "publish": "func azure functionapp publish"
   },
   "dependencies": {
     "azure-storage": "^2.10.3",

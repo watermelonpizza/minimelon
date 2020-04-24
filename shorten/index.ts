@@ -72,7 +72,12 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-  context.log("HTTP trigger function processed a request.");
+  context.log(
+    context.invocationId,
+    "HTTP trigger function processed a shorten request.",
+    req.query,
+    req.headers
+  );
 
   // try to grab the url from either
   // the query `?url=...` or the body `{url:...}` or a header `x-url: ...`

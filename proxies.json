@@ -7,12 +7,6 @@
         "methods": ["GET"]
       },
       "backendUri": "https://%WEBSITE_HOSTNAME%/api/lookup?slug={slug}"
-    },
-    "shoten": {
-      "matchCondition": {
-        "route": "/shorten{*all}"
-      },
-      "backendUri": "https://%WEBSITE_HOSTNAME%/api/shorten{all}"
     }
   }
 }
