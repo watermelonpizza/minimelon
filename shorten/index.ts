@@ -16,7 +16,7 @@ const nanoid = customAlphabet(
 
 // create the azure table service
 const tableService = azure.createTableService(
-  process.env["AZURE_TABLE_CONNECTION_STRING"] || "UseDevelopmentStorage=true"
+  process.env["AzureWebJobsStorage"]
 );
 
 const tableName = process.env["AZURE_TABLE_NAME"] || "minimelons";
@@ -147,7 +147,7 @@ const httpTrigger: AzureFunction = async function (
       } else {
         context.res = {
           status: 500,
-          body: `500: OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! _trace ${context.invocationId}`,
+          body: `500: OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! [_trace:${context.invocationId}]`,
         };
 
         return;

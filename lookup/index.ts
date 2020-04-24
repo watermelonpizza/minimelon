@@ -6,7 +6,7 @@ const notFoundPageUrl = process.env["NOT_FOUND_URL"];
 
 // create the azure table service
 const tableService = azure.createTableService(
-  process.env["AZURE_TABLE_CONNECTION_STRING"] || "UseDevelopmentStorage=true"
+  process.env["AzureWebJobsStorage"]
 );
 
 const tableName = process.env["AZURE_TABLE_NAME"] || "minimelons";
