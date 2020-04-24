@@ -26,24 +26,31 @@ const tableName = process.env["AZURE_TABLE_NAME"] || "minimelons";
 const customDomain = process.env["CUSTOM_DOMAIN"];
 
 const maxSlugLength = process.env["MAX_SLUG_LENGTH"] || 250;
+
 const slugValidationRegex = new RegExp(
   process.env["SLUG_VALIDATION_REGEX"] || "^[\\d\\w-]+$"
 );
 
+interface MiniMelonUrl {
+  // index on the first character of the short url
+  // no reason other than slightly faster retrieval so you don't have
+  // unique partitions for every shortened url
+  PartitionKey: string;
+  // set the key to the whole shotened url (including the first charater)
+  RowKey: string;
+  // the full url that was shortened
+  url: string;
+}
+
 // wrap the callback system into a promise
-// so we can use await in the main azure function part
+// so we can use await in the main function
 function insertEntity(slug: string, url: string): Promise<unknown> {
   return new Promise((res, rej) => {
-    tableService.insertEntity(
+    tableService.insertEntity<MiniMelonUrl>(
       tableName,
       {
-        // index on the first character of the short url
-        // no reason other than slightly faster retrieval so you don't have
-        // unique partitions for every shortened url
         PartitionKey: slug[0],
-        // set the key to the whole shotened url (including the first charater)
         RowKey: slug,
-        // the full url that was shortened
         url,
       },
       (error, result) => {
@@ -86,7 +93,7 @@ const httpTrigger: AzureFunction = async function (
     if (slug.length > maxSlugLength) {
       context.res = {
         status: 400,
-        body: `The slug '${
+        body: `400: The slug '${
           // just grab the first 25 characters of the slug
           // so the response isn't blasted out back to the user
           (slug as string).substr(0, 25) + (slug.length > 25 ? "..." : "")
@@ -98,7 +105,7 @@ const httpTrigger: AzureFunction = async function (
     } else if (!slugValidationRegex.test(slug)) {
       context.res = {
         status: 400,
-        body: `The slug '${
+        body: `400: The slug '${
           // just grab the first 25 characters of the slug
           // so the response isn't blasted out back to the user
           (slug as string).substr(0, 25) + (slug.length > 25 ? "..." : "")
@@ -133,14 +140,14 @@ const httpTrigger: AzureFunction = async function (
       if (error.statusCode === 409) {
         context.res = {
           status: 400,
-          body: `The slug '${slug}' already exists`,
+          body: `400: The slug '${slug}' already exists`,
         };
 
         return;
       } else {
         context.res = {
           status: 500,
-          body: `OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! _trace: ${context.invocationId}`,
+          body: `500: OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! _trace ${context.invocationId}`,
         };
 
         return;
@@ -151,7 +158,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body:
-        "You must specify a url in the query '?url=...' or the body '{url:...}' or a header 'x-url:...'",
+        "400: You must specify a url in the query '?url=...' or the body '{url:...}' or a header 'x-url:...'",
     };
 
     return;
