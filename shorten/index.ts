@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { customAlphabet } from "nanoid/async";
 import * as azure from "azure-storage";
+import { result } from "../functions";
 
 // specify a custom alphabet for the nanoid generator
 const alphabet =
@@ -96,19 +97,19 @@ const httpTrigger: AzureFunction = async function (
 
     // ensure the slug doesn't go over the set length
     if (slug.length > maxSlugLength) {
-      context.res = {
+      context.res = result({
         status: 400,
         body: `400: The slug '${
           // just grab the first 25 characters of the slug
           // so the response isn't blasted out back to the user
           (slug as string).substr(0, 25) + (slug.length > 25 ? "..." : "")
         }' is too large, max length is ${maxSlugLength} characters`,
-      };
+      });
 
       return;
       // ensure the slug passes the regex validation
     } else if (!slugValidationRegex.test(slug)) {
-      context.res = {
+      context.res = result({
         status: 400,
         body: `400: The slug '${
           // just grab the first 25 characters of the slug
@@ -117,7 +118,7 @@ const httpTrigger: AzureFunction = async function (
         }' may contain only letters, numbers or dashes (${
           slugValidationRegex.source
         })`,
-      };
+      });
 
       return;
     }
@@ -128,10 +129,10 @@ const httpTrigger: AzureFunction = async function (
       await insertEntity(slug, url);
       const domain = customDomain || new URL(req.url).origin;
 
-      context.res = {
+      context.res = result({
         status: 200,
         body: domain + (domain.endsWith("/") ? "" : "/") + slug,
-      };
+      });
 
       return;
     } catch (error) {
@@ -143,28 +144,28 @@ const httpTrigger: AzureFunction = async function (
 
       // resource already exists, let the user know
       if (error.statusCode === 409) {
-        context.res = {
+        context.res = result({
           status: 400,
           body: `400: The slug '${slug}' already exists`,
-        };
+        });
 
         return;
       } else {
-        context.res = {
+        context.res = result({
           status: 500,
           body: `500: OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! [_trace:${context.invocationId}]`,
-        };
+        });
 
         return;
       }
     }
   } else {
     // otherwise just return an error on how to use it
-    context.res = {
+    context.res = result({
       status: 400,
       body:
         "400: You must specify a url in the query '?url=...' or the body '{url:...}' or a header 'x-url:...'",
-    };
+    });
 
     return;
   }

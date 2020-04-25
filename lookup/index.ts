@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as azure from "azure-storage";
+import { result, notFound } from "../functions";
 
 // optional not found url to redirect to
 const notFoundPageUrl = process.env["NOT_FOUND_URL"];
@@ -61,12 +62,7 @@ const httpTrigger: AzureFunction = async function (
 
   // if the slug isn't provided, return with 400 error
   if (!slug) {
-    context.res = {
-      status: 400,
-      body:
-        "400: You must specify a slug in the query '?slug=...' or a header 'x-slug:...'",
-    };
-
+    context.res = notFound(notFoundPageUrl);
     return;
   }
 
@@ -81,27 +77,27 @@ const httpTrigger: AzureFunction = async function (
       // if the query has no_redir as a parameter
       // then just return the url it will redirect to
       if (req.query.no_redir) {
-        context.res = {
+        context.res = result({
           status: 200,
           headers: { "Content-Type": "text/plain" },
           body: url,
-        };
+        });
 
         return;
       }
 
-      context.res = {
-        status: 307,
-        headers: { Location: url },
-      };
+      context.res = result({
+        status: 302,
+        headers: { Location: url, "Content-Type": "text/html; charset=utf-8" },
+      });
 
       return;
     } catch (error) {
-      context.res = {
+      context.res = result({
         status: 200,
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
         body: url,
-      };
+      });
 
       return;
     }
@@ -109,22 +105,7 @@ const httpTrigger: AzureFunction = async function (
     // if the azure table storage doesn't see it
     // just return a 404 page
     if (error.statusCode === 404) {
-      // if not found page specified redirect (temporarily!) to that page
-      if (notFoundPageUrl) {
-        context.res = {
-          status: 307,
-          headers: { Location: notFoundPageUrl },
-        };
-
-        return;
-      }
-
-      // otherwise just return a basic 404
-      context.res = {
-        status: 404,
-        body: `404: I don't know that one ¯\\_(ツ)_/¯`,
-      };
-
+      context.res = notFound(notFoundPageUrl);
       return;
     } else {
       // something bad happened here. log it.
@@ -134,10 +115,10 @@ const httpTrigger: AzureFunction = async function (
         error
       );
 
-      context.res = {
+      context.res = result({
         status: 500,
         body: `500: OOPSIE WOOPSIE!! Uwu We make a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! [_trace:${context.invocationId}]`,
-      };
+      });
 
       return;
     }
