@@ -35,7 +35,11 @@ A custom slug to use instead of the auto-generated one.
 `<functions domain or CUSTOM_DOMAIN>/{slug}` in the body as plain/text.
 
 ## proxies.json
-This redirects your custom domain to the `lookup` function passing through the slug and other query parameters. e.g. `https://example.com/d2t44Z` proxies to `https://myazurefunction.azurewebsites.net/api/lookup?slug=d2t44Z` or `https://example.com/d2t44Z?no_redir=true` proxies to `https://myazurefunction.azurewebsites.net/api/lookup?slug=d2t44Z&no_redir=true` 
+This redirects your custom domain to the `lookup` function passing through the slug and other query parameters.
+
+e.g. `https://example.com/d2t44Z` proxies to `https://myazurefunction.azurewebsites.net/api/lookup?slug=d2t44Z` 
+
+or `https://example.com/d2t44Z?no_redir=true` proxies to `https://myazurefunction.azurewebsites.net/api/lookup?slug=d2t44Z&no_redir=true` 
 
 ## environment variables
 #### `CUSTOM_DOMAIN` (required, depending on your setup)
