@@ -5,15 +5,22 @@ import { result } from "../functions";
 
 // specify a custom alphabet for the nanoid generator
 const alphabet =
-  process.env["NANOID_ALPHABET"] ||
+  process.env["SLUG_ALPHABET"] ||
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 // create the nanoid generator
 const nanoid = customAlphabet(
   alphabet,
   // set the length of the generated ids
-  Number.parseInt(process.env["NANOID_SIZE"]) || 6
+  Number.parseInt(process.env["SLUG_SIZE"]) || 6
 );
+
+const maxSlugLength = process.env["SLUG_MAX_LENGTH"] || 250;
+
+const slugValidationRegex = new RegExp(
+  process.env["SLUG_VALIDATION_REGEX"] || "^[\\d\\w-]+$"
+);
+
 
 // create the azure table service
 const tableService = azure.createTableService(
@@ -25,12 +32,6 @@ const tableName = process.env["AZURE_TABLE_NAME"] || "minimelons";
 // ability to specify a custom root url (i.e. https://some-custom-url.com)
 // otherwise will use the base url for the create method.
 const customDomain = process.env["CUSTOM_DOMAIN"];
-
-const maxSlugLength = process.env["MAX_SLUG_LENGTH"] || 250;
-
-const slugValidationRegex = new RegExp(
-  process.env["SLUG_VALIDATION_REGEX"] || "^[\\d\\w-]+$"
-);
 
 interface MiniMelonUrl {
   // index on the first character of the short url
