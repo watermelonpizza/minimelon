@@ -1,0 +1,15 @@
+name: keep melon.sh warm
+
+on:
+  schedule:
+    - cron:  '*/15 * * * *'
+
+jobs:
+  ping:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: wei/curl@v1.1.1
+      with:
+        args: https://melon.sh
