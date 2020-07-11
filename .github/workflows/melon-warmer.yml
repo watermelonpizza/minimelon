@@ -10,6 +10,4 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: wei/curl@v1.1.1
-      with:
-        args: https://melon.sh
+    - run: curl --silent --show-error --fail https://melon.sh
