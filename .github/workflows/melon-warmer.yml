@@ -1,4 +1,4 @@
-name: keep melon.sh warm
+name: keep function warm
 
 on:
   schedule:
@@ -10,4 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - run: curl --silent --show-error --fail https://melon.sh
+    - shell: bash
+      env:
+        CURL_URL: ${{ secrets.CURL_URL }}
+      run: |
+        curl --silent --show-error --fail "$CURL_URL"
