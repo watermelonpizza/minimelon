@@ -2,7 +2,7 @@ name: keep function warm
 
 on:
   schedule:
-    - cron:  '*/15 * * * *'
+    - cron:  '*/8 * * * *'
 
 jobs:
   ping:
